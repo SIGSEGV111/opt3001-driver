@@ -47,7 +47,7 @@ namespace opt3001
 		return ntohs(value);
 	}
 
-	void TOPT3001::Refresh()
+	void TOPT3001::Refresh(const bool clear_irq)
 	{
 		const uint16_t raw_lux = ReadRegister(0x00);
 		const uint16_t exponent = (raw_lux & 0xf000) >> 12;
@@ -57,6 +57,9 @@ namespace opt3001
 		this->lux = lsb * (double)mantissa;
 
 		if(DEBUG) fprintf(stderr, "[DEBUG] raw_lux = %04hx ; exponent = %hu ; mantissa = %hu ; lsb = %lf ; lux = %lf\n", raw_lux, exponent, mantissa, lsb, this->lux);
+
+		if(clear_irq)
+			ReadRegister(0x01);
 	}
 
 	void TOPT3001::Reset()
@@ -91,12 +94,14 @@ namespace opt3001
 		config.rn = 0b1100;
 		config.ct = 1;
 		config.m = 0b11;
-		config.l = 1;
+		config.l = 0;
 		config.pol = 0;
 		config.me = 0;
 		config.fc = 0;
 
-		WriteRegister(0x01, *(int16_t*)&config);
+		WriteRegister(0x01, *(int16_t*)&config);	//	config
+		WriteRegister(0x02, 0b1100000000000000);	//	low
+		WriteRegister(0x03, 0x0);					//	high
 	}
 
 	TOPT3001::TOPT3001(const char* const i2c_bus_device, const uint8_t address) : fd_i2cbus(SYSERR(open(i2c_bus_device, O_RDWR | O_CLOEXEC | O_SYNC))), address(address), regindex_cache((uint8_t)-1), lux(-1.0)

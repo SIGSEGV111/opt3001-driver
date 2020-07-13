@@ -20,7 +20,7 @@ namespace opt3001
 
 		public:
 			double Lux() const { return lux; }
-			void Refresh();
+			void Refresh(const bool clear_irq = false);
 
 			void Reset();
 
