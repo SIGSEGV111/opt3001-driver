@@ -22,6 +22,8 @@ namespace opt3001
 			double Lux() const { return lux; }
 			void Refresh();
 
+			void Reset();
+
 			TOPT3001(const char* const i2c_bus_device, const uint8_t address);
 			TOPT3001(const int fd_i2cbus, const uint8_t address);
 			~TOPT3001();
