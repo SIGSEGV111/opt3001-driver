@@ -111,7 +111,8 @@ int main(int argc, char* argv[])
 			{
 				char discard[16];
 				SYSERR(read(pfd_irq.fd, discard, sizeof(discard)));
-				SYSERR(poll(&pfd_irq, 1, -1));
+				if(SYSERR(poll(&pfd_irq, 1, 1000)) == 0)
+					fprintf(stderr, "[WARN] IRQ timeout. Chip did not trigger an IRQ within 1000ms\n");
 			}
 		}
 
